@@ -12,34 +12,26 @@ function App() {
         {id: 4, title: 'Javascript 4', body: 'Description'},
         {id: 5, title: 'Javascript 5', body: 'Description'}
     ])
-    const [title, setTitle] = useState('')
-    const [body, setBody] = useState('')
+    const [post, setPost] = useState({title: '', body: ''})
 
     const addNewPost = (e) => {
         e.preventDefault()
-        const newPost = {
-            id: Date.now(),
-            title,
-            body
-        }
-        setPosts([...posts, newPost])
-        setTitle('')
-        setBody('')
-        console.log(newPost)
+        setPosts([...posts, {...post, id: Date.now()}])
+        setPost({title: '', body: ''})
     }
 
     return (
         <div className="App">
             <form>
                 <CustomInput
-                    value={title}
-                    onChange={e => setTitle(e.target.value)}
+                    value={post.title}
+                    onChange={e => setPost({...post, title: e.target.value})}
                     type="text"
                     placeholder="Post title"
                 />
                 <CustomInput
-                    value={body}
-                    onChange={e => setBody(e.target.value)}
+                    value={post.body}
+                    onChange={e => setPost({...post, body: e.target.value})}
                     type="text"
                     placeholder="Post description"
                 />
