@@ -1,21 +1,19 @@
-import React from 'react'
+import React, {useState} from 'react'
 import './styles/App.css'
+import PostList from "./components/PostList";
 
 function App() {
+    const [posts, setPosts] = useState([
+        {id: 1, title: 'Javascript 1', body: 'Description'},
+        {id: 2, title: 'Javascript 2', body: 'Description'},
+        {id: 3, title: 'Javascript 3', body: 'Description'},
+        {id: 4, title: 'Javascript 4', body: 'Description'},
+        {id: 5, title: 'Javascript 5', body: 'Description'}
+    ])
 
     return (
         <div className="App">
-            <div className="post">
-                <div className="post__content">
-                    <strong>1. Javascript</strong>
-                    <div>
-                        Javascript - programming language
-                    </div>
-                </div>
-                <div className="post__buttons">
-                    <button>Delete</button>
-                </div>
-            </div>
+            <PostList posts={posts} title="Post list"/>
         </div>
     );
 }
