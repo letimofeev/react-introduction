@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import './styles/App.css'
 import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
@@ -6,18 +6,29 @@ import PostFilter from "./components/PostFilter";
 import CustomModal from "./components/UI/modal/CustomModal";
 import CustomButton from "./components/UI/button/CustomButton";
 import {usePosts} from "./hooks/usePosts";
+import PostService from "./API/PostService";
+import Loader from "./components/UI/loader/Loader";
 
 function App() {
-    const [posts, setPosts] = useState([
-        {id: 1, title: 'cJavascript 1', body: 'Description 5'},
-        {id: 2, title: 'aJavascript 2', body: 'Description 4'},
-        {id: 3, title: 'bJavascript 3', body: 'Description 3'},
-        {id: 4, title: 'Javascript 5', body: 'Description 1'},
-        {id: 5, title: 'Javascript 4', body: 'Description 2'}
-    ])
+    const [posts, setPosts] = useState([])
     const [filter, setFilter] = useState({sort: '', query: ''})
     const [modal, setModal] = useState(false)
     const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
+    const [isPostsLoading, setIsPostsLoading] = useState(false)
+
+    useEffect(() => {
+        fetchPosts()
+    }, [])
+    
+    async function fetchPosts() {
+        setIsPostsLoading(true)
+        setTimeout(async () => {
+            const posts = await PostService.getAll()
+            setPosts(posts)
+            setIsPostsLoading(false)
+        }, 1000)
+
+    }
 
     const createPost = (newPost) => {
         setPosts([...posts, newPost])
@@ -29,7 +40,7 @@ function App() {
     }
 
     return (
-        <div className="App">
+        <div className='App'>
             <CustomButton style={{marginTop: '30px'}} onClick={() => setModal(true)}>
                 Create post
             </CustomButton>
@@ -38,7 +49,14 @@ function App() {
             </CustomModal>
             <hr style={{margin: '15px 0'}}/>
             <PostFilter filter={filter} setFilter={setFilter}/>
-            <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Post list"/>
+            {isPostsLoading
+                ?
+                <div style={{display: 'flex', justifyContent: 'center', marginTop: '50px'}}>
+                    <Loader/>
+                </div>
+                :
+                <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Post list"/>
+            }
         </div>
     );
 }
