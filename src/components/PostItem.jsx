@@ -1,7 +1,10 @@
 import React from 'react';
 import CustomButton from "./UI/button/CustomButton";
+import {useHistory} from "react-router-dom";
 
 const PostItem = (props) => {
+    const router = useHistory()
+
     return (
         <div className="post">
             <div className="post__content">
@@ -11,6 +14,9 @@ const PostItem = (props) => {
                 </div>
             </div>
             <div className="post__buttons">
+                <CustomButton onClick={() => router.push(`/posts/${props.post.id}`)}>
+                    Open
+                </CustomButton>
                 <CustomButton onClick={() => props.remove(props.post)}>Delete</CustomButton>
             </div>
         </div>
