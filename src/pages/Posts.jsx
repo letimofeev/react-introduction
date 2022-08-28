@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import '../styles/App.css'
+import React, {useEffect, useRef, useState} from "react"
+import "../styles/App.css"
 import PostList from "../components/PostList";
 import PostForm from "../components/PostForm";
 import PostFilter from "../components/PostFilter";
@@ -11,6 +11,8 @@ import Loader from "../components/UI/loader/Loader";
 import {useFetching} from "../hooks/useFetching";
 import {getPageCount} from "../utils/pages";
 import Pagination from "../components/UI/pagination/Pagination";
+import {useObserver} from "../hooks/useObserver";
+import CustomSelect from "../components/UI/select/CustomSelect";
 
 function Posts() {
     const [posts, setPosts] = useState([])
@@ -22,16 +24,22 @@ function Posts() {
 
     const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
 
+    const lastElement = useRef()
+
     const [fetchPosts, isPostsLoading, postError] = useFetching(async (limit, page) => {
         const response = await PostService.getAll(limit, page)
-        setPosts(response.data)
+        setPosts([...posts, ...response.data])
         const totalCount = response.headers['x-total-count']
         setPageTotalCount(getPageCount(totalCount, limit))
     })
 
+    useObserver(lastElement, page < totalPageCount, isPostsLoading, () => {
+        setPage(page + 1)
+    })
+
     useEffect(() => {
         fetchPosts(limit, page)
-    }, [])
+    }, [page, limit])
 
     const createPost = (newPost) => {
         setPosts([...posts, newPost])
@@ -44,7 +52,6 @@ function Posts() {
 
     const changePage = (page) => {
         setPage(page)
-        fetchPosts(limit, page)
     }
 
     return (
@@ -60,13 +67,23 @@ function Posts() {
             {postError &&
                 <h1>Error has occurred</h1>
             }
-            {isPostsLoading
-                ?
+            <CustomSelect
+                value={limit}
+                onChange={value => setLimit(value)}
+                defaultValue="Page elements count"
+                options={[
+                    {value: 5, name: '5'},
+                    {value: 10, name: '10'},
+                    {value: 25, name: '25'},
+                    {value: -1, name: 'Show all'}
+                ]}
+            />
+            <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Post list"/>
+            <div ref={lastElement} style={{height: '20px', background: 'red'}}/>
+            {isPostsLoading &&
                 <div style={{display: 'flex', justifyContent: 'center', marginTop: '50px'}}>
                     <Loader/>
                 </div>
-                :
-                <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Post list"/>
             }
             <Pagination
                 totalPageCount={totalPageCount}
