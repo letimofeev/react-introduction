@@ -13,7 +13,7 @@ import {getPageCount} from "../utils/pages";
 import Pagination from "../components/UI/pagination/Pagination";
 
 function Posts() {
-    const [posts, setPosts]= useState([])
+    const [posts, setPosts] = useState([])
     const [filter, setFilter] = useState({sort: '', query: ''})
     const [modal, setModal] = useState(false)
     const [totalPageCount, setPageTotalCount] = useState(0)
@@ -57,18 +57,16 @@ function Posts() {
             </CustomModal>
             <hr style={{margin: '15px 0'}}/>
             <PostFilter filter={filter} setFilter={setFilter}/>
-            {
-                postError &&
+            {postError &&
                 <h1>Error has occurred</h1>
             }
-            {
-                isPostsLoading
-                    ?
-                    <div style={{display: 'flex', justifyContent: 'center', marginTop: '50px'}}>
-                        <Loader/>
-                    </div>
-                    :
-                    <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Post list"/>
+            {isPostsLoading
+                ?
+                <div style={{display: 'flex', justifyContent: 'center', marginTop: '50px'}}>
+                    <Loader/>
+                </div>
+                :
+                <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Post list"/>
             }
             <Pagination
                 totalPageCount={totalPageCount}
